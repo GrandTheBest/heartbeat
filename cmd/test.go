@@ -6,14 +6,14 @@ import (
 	"log"
 	"time"
 
-	"github.com/GrandTheBest/heartbeat/pkg"
+	"github.com/GrandTheBest/heartbeat"
 	"github.com/GrandTheBest/heartbeat/types"
 )
 
 func main() {
-	server := pkg.NewServer()
-	peer := pkg.NewPeer("bot", "http://127.0.0.1:7000", 10*time.Second)
-	client := pkg.NewClient("http://127.0.0.1:7000", 30*time.Second)
+	server := heartbeat.NewServer()
+	peer := heartbeat.NewPeer("bot", "http://127.0.0.1:7000", 10*time.Second)
+	client := heartbeat.NewClient("http://127.0.0.1:7000", 30*time.Second)
 
 	vault := types.PacketVault{}
 

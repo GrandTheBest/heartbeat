@@ -1,4 +1,4 @@
-package pkg
+package heartbeat
 
 import (
 	"time"

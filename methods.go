@@ -1,4 +1,4 @@
-package pkg
+package heartbeat
 
 import (
 	"context"
@@ -42,7 +42,7 @@ func NewPeer(name string, host string, cooldown time.Duration) *Peer {
 	}
 }
 
-// Starts — starts a server
+// Start — starts a server
 func (s *Server) Start(port int, v *types.PacketVault) error {
 	http.HandleFunc("/pulse", func(w http.ResponseWriter, r *http.Request) {
 		resp := types.ResponsePacket{

@@ -1,4 +1,4 @@
-package pkg
+package heartbeat
 
 import "github.com/GrandTheBest/heartbeat/types"
 
