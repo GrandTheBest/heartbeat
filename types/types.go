@@ -1,6 +1,8 @@
 package types
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -10,9 +12,10 @@ type Status int
 // PulsePacket is a basis structure, which describes a peer status.
 // It used for pushing status on server from peer(aka Agent)
 type PulsePacket struct {
-	PeerUUID  uuid.UUID `json:"peer_uuid"`
-	PeerName  string    `json:"peer_name"`  // Agent name
-	PulseTime int64     `json:"pulse_time"` // Unix time
+	PeerUUID  uuid.UUID     `json:"peer_uuid"`
+	PeerName  string        `json:"peer_name"`  // Agent name
+	PulseTime int64         `json:"pulse_time"` // Unix time
+	Cooldown  time.Duration `json:"cooldown"`   // Also that «PulseCooldown»
 }
 
 // StatusPacket is a basic structure, which using for tell client about status of some peer.

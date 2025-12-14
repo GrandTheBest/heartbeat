@@ -7,7 +7,9 @@ import (
 )
 
 // Server is a common server, which using for register Server
-type Server struct{}
+type Server struct {
+	PacketLifetime time.Duration
+}
 
 // Client is a common server, which using for register Client
 type Client struct {

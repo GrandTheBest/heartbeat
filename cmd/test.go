@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -11,9 +10,9 @@ import (
 )
 
 func main() {
-	server := heartbeat.NewServer()
-	peer := heartbeat.NewPeer("bot", "http://127.0.0.1:7000", 10*time.Second)
-	client := heartbeat.NewClient("http://127.0.0.1:7000", 30*time.Second)
+	server := heartbeat.NewServer(10 * time.Second)
+	peer := heartbeat.NewPeer("bot", "http://127.0.0.1:7000", 20*time.Second)
+	client := heartbeat.NewClient("http://127.0.0.1:7000", 5*time.Second)
 
 	vault := types.PacketVault{}
 
@@ -34,6 +33,10 @@ func main() {
 
 	for {
 		packet := <-packets
-		fmt.Printf("UUID: %s\nLast Check: %s\n\n", packet.Packets[0].LastPulse.PeerUUID, time.Unix(packet.Packets[0].LastPulse.PulseTime, 0).Format("2006.01.02 15:04:05"))
+		if len(packet.Packets) == 0 {
+			log.Println("Skipping!")
+			continue
+		}
+		log.Printf("UUID: %s\nLast Check: %s\nStatus: %d\n\n", packet.Packets[0].LastPulse.PeerUUID, time.Unix(packet.Packets[0].LastPulse.PulseTime, 0).Format("2006.01.02 15:04:05"), packet.Packets[0].Status)
 	}
 }

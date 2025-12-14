@@ -15,8 +15,10 @@ import (
 )
 
 // NewServer returns a new server instance
-func NewServer() *Server {
-	return &Server{}
+func NewServer(pl time.Duration) *Server {
+	return &Server{
+		PacketLifetime: pl,
+	}
 }
 
 // NewClient returns a new client instance.
@@ -100,6 +102,19 @@ func (s *Server) Start(port int, v *types.PacketVault) error {
 			fmt.Printf("Failed to encode: %v", err)
 		}
 	})
+
+	go func() {
+		for {
+			for i, p := range *v {
+				if time.Now().Unix()-p.LastPulse.PulseTime > int64(p.LastPulse.Cooldown.Seconds()) {
+					l := p
+					l.Status = FailureStatus
+					(*v)[i] = l
+				}
+			}
+			time.Sleep(s.PacketLifetime)
+		}
+	}()
 
 	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 }
