@@ -7,7 +7,6 @@ import (
 
 	"github.com/GrandTheBest/heartbeat"
 	"github.com/GrandTheBest/heartbeat/types"
-	"github.com/google/uuid"
 )
 
 func main() {
@@ -16,7 +15,7 @@ func main() {
 	client := heartbeat.NewClient("http://127.0.0.1:7000", 2*time.Second)
 
 	vault := types.Vault{
-		V: map[uuid.UUID]*types.StatusPacket{},
+		V: map[string]*types.StatusPacket{},
 	}
 
 	go func() {
@@ -40,6 +39,6 @@ func main() {
 			log.Println("Skipping!")
 			continue
 		}
-		log.Printf("UUID: %s\nLast Check: %s\nStatus: %d\n\n", packet.Packets[0].LastPulse.PeerUUID, time.Unix(packet.Packets[0].LastPulse.PulseTime, 0).Format("2006.01.02 15:04:05"), packet.Packets[0].Status)
+		log.Printf("Name: %s\nLast Check: %s\nStatus: %d\n\n", packet.Packets[0].LastPulse.PeerName, time.Unix(packet.Packets[0].LastPulse.PulseTime, 0).Format("2006.01.02 15:04:05"), packet.Packets[0].Status)
 	}
 }

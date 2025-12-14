@@ -2,8 +2,6 @@ package heartbeat
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 // Server is a common server, which using for register Server
@@ -19,7 +17,6 @@ type Client struct {
 
 // Peer is a common server, which using for register Peer
 type Peer struct {
-	UUID          uuid.UUID
 	Name          string
 	ConnectedTo   string        // Server host
 	PulseCooldown time.Duration // Interval of status pushing

@@ -11,7 +11,6 @@ import (
 
 	"github.com/GrandTheBest/heartbeat/internal"
 	"github.com/GrandTheBest/heartbeat/types"
-	"github.com/google/uuid"
 )
 
 // NewServer returns a new server instance
@@ -37,7 +36,6 @@ func NewClient(host string, cooldown time.Duration) *Client {
 // «cooldown» is a cooldown, by which the peer will send Pulse
 func NewPeer(name string, host string, cooldown time.Duration) *Peer {
 	return &Peer{
-		UUID:          uuid.New(),
 		Name:          name,
 		ConnectedTo:   host,
 		PulseCooldown: cooldown,
@@ -122,7 +120,6 @@ func (p *Peer) Send() (bool, error) {
 	resp, err := internal.CallP(
 		fmt.Sprintf("%s/pulse", p.ConnectedTo),
 		types.PulsePacket{
-			PeerUUID:  p.UUID,
 			PeerName:  p.Name,
 			PulseTime: time.Now().Unix(),
 		},
@@ -155,7 +152,7 @@ func (p *Peer) StartPushing(ctx context.Context) {
 // Receive is a method, which allows server to receive PulsePacket
 func (s *Server) Receive(v *types.Vault, p types.PulsePacket) {
 	v.Lock()
-	v.V[p.PeerUUID] = &types.StatusPacket{
+	v.V[p.PeerName] = &types.StatusPacket{
 		Status:    ActiveStatus,
 		LastPulse: p,
 	}

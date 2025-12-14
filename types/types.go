@@ -3,8 +3,6 @@ package types
 import (
 	"sync"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 // Status is a peer status. See constants.go
@@ -13,7 +11,6 @@ type Status int
 // PulsePacket is a basis structure, which describes a peer status.
 // It used for pushing status on server from peer(aka Agent)
 type PulsePacket struct {
-	PeerUUID  uuid.UUID     `json:"peer_uuid"`
 	PeerName  string        `json:"peer_name"`  // Agent name
 	PulseTime int64         `json:"pulse_time"` // Unix time
 	Cooldown  time.Duration `json:"cooldown"`   // Also that «PulseCooldown»
@@ -40,7 +37,7 @@ type StatusResponse struct {
 	Packets []StatusPacket `json:"packets"` // Status packets
 }
 
-type packetVault map[uuid.UUID]*StatusPacket
+type packetVault map[string]*StatusPacket
 
 // Vault is a basic type, which using for save pull packets
 type Vault struct {
