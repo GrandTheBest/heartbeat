@@ -1,6 +1,7 @@
 package types
 
 import (
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -39,5 +40,10 @@ type StatusResponse struct {
 	Packets []StatusPacket `json:"packets"` // Status packets
 }
 
-// PacketVault is a basic type, which using for save pull packets
-type PacketVault map[uuid.UUID]*StatusPacket
+type packetVault map[uuid.UUID]*StatusPacket
+
+// Vault is a basic type, which using for save pull packets
+type Vault struct {
+	sync.Mutex
+	V packetVault
+}

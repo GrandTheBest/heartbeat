@@ -45,7 +45,7 @@ func NewPeer(name string, host string, cooldown time.Duration) *Peer {
 }
 
 // Start — starts a server
-func (s *Server) Start(port int, v *types.PacketVault) error {
+func (s *Server) Start(port int, v *types.Vault) error {
 	http.HandleFunc("/pulse", func(w http.ResponseWriter, r *http.Request) {
 		resp := types.ResponsePacket{
 			Ok:      true,
@@ -72,11 +72,7 @@ func (s *Server) Start(port int, v *types.PacketVault) error {
 			}
 		}
 
-		(*v)[body.PeerUUID] = &types.StatusPacket{
-			Status:    ActiveStatus,
-			LastPulse: body,
-		}
-
+		s.Receive(v, body)
 		w.Header().Set("Content-Type", "application/json")
 
 		err = json.NewEncoder(w).Encode(resp)
@@ -105,13 +101,15 @@ func (s *Server) Start(port int, v *types.PacketVault) error {
 
 	go func() {
 		for {
-			for i, p := range *v {
+			v.Lock()
+			for i, p := range v.V {
 				if time.Now().Unix()-p.LastPulse.PulseTime > int64(p.LastPulse.Cooldown.Seconds()) {
 					l := p
 					l.Status = FailureStatus
-					(*v)[i] = l
+					v.V[i] = l
 				}
 			}
+			v.Unlock()
 			time.Sleep(s.PacketLifetime)
 		}
 	}()
@@ -155,17 +153,23 @@ func (p *Peer) StartPushing(ctx context.Context) {
 }
 
 // Receive is a method, which allows server to receive PulsePacket
-func (s *Server) Receive(v *types.PacketVault, p types.PulsePacket) {
-	(*v)[p.PeerUUID].LastPulse = p
-	(*v)[p.PeerUUID].Status = ActiveStatus
+func (s *Server) Receive(v *types.Vault, p types.PulsePacket) {
+	v.Lock()
+	v.V[p.PeerUUID] = &types.StatusPacket{
+		Status:    ActiveStatus,
+		LastPulse: p,
+	}
+	v.Unlock()
 }
 
 // Give is a method, which gives all Status packets to client
-func (s *Server) Give(v *types.PacketVault) []types.StatusPacket {
-	packets := make([]types.StatusPacket, 0, len(*v))
-	for _, val := range *v {
+func (s *Server) Give(v *types.Vault) []types.StatusPacket {
+	v.Lock()
+	packets := make([]types.StatusPacket, 0, len(v.V))
+	for _, val := range v.V {
 		packets = append(packets, *val)
 	}
+	v.Unlock()
 	return packets
 }
 

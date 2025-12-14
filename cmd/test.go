@@ -7,14 +7,17 @@ import (
 
 	"github.com/GrandTheBest/heartbeat"
 	"github.com/GrandTheBest/heartbeat/types"
+	"github.com/google/uuid"
 )
 
 func main() {
-	server := heartbeat.NewServer(10 * time.Second)
-	peer := heartbeat.NewPeer("bot", "http://127.0.0.1:7000", 20*time.Second)
-	client := heartbeat.NewClient("http://127.0.0.1:7000", 5*time.Second)
+	server := heartbeat.NewServer(5 * time.Second)
+	peer := heartbeat.NewPeer("bot", "http://127.0.0.1:7000", 10*time.Second)
+	client := heartbeat.NewClient("http://127.0.0.1:7000", 2*time.Second)
 
-	vault := types.PacketVault{}
+	vault := types.Vault{
+		V: map[uuid.UUID]*types.StatusPacket{},
+	}
 
 	go func() {
 		err := server.Start(7000, &vault)
